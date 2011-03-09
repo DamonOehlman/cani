@@ -1,8 +1,18 @@
-# CanI
+# CANI (Can I?)
 
 This library has started purely as a feature level detection utility (in the vein of Modernizr) but targeted primarily at building interactive applications using HTML5 canvas (and friends).
 
 This is not meant to be a replacement for Modernizr but rather a suite of runtime checks that can assist you in working with canvas and others across browsers. At the moment it has very few tests, but over time it is expected to grow.
+
+## Usage
+
+Using CANI is simple. At the appropriate time (once the DOM has been initialized), simply call the following:
+
+	CANI.test(function(results) {
+		
+	});
+	
+On the first call of this function the registered tests will be run and the results transposed into the global `CANI` object.  The results are additionally passed back through the callback.
 
 ## Canvas Tests
 
