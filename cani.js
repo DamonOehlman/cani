@@ -1,7 +1,8 @@
 var CANI = {};
 (function(exports) {
     var tests = [],
-        testIdx = 0;
+        testIdx = 0,
+        publishedResults = false;
 
     /* exports */
 
@@ -12,39 +13,53 @@ var CANI = {};
         });
     };
 
-    var run = exports.run = function(callback) {
+    var init = exports.init = function(callback) {
 
-        var results = {},
-            test;
+        var tmpResults = {};
 
         function runCurrentTest() {
             if (testIdx < tests.length) {
-                test = tests[testIdx++];
+                var test = tests[testIdx++];
 
-                if (! results[test.section]) {
-                    results[test.section] = {};
+                if (! tmpResults[test.section]) {
+                    tmpResults[test.section] = {};
                 } // if
 
-                test.run(results[test.section], runCurrentTest);
+                test.run(tmpResults[test.section], runCurrentTest);
             }
-            else if (callback) {
-                callback(results);
+            else {
+                for (var section in tmpResults) {
+                    exports[section] = tmpResults[section];
+                } // for
+
+                publishedResults = true;
+
+                if (callback) {
+                    callback(exports);
+                } // if
             } // if..else
         } // runCurrentTest
 
-        testIdx = 0;
-        runCurrentTest();
+        if (publishedResults && callback) {
+            callback(exports);
+        }
+        else {
+            testIdx = 0;
+            runCurrentTest();
+        } // if..else
     }; // run
 
 register('canvas', function(results, callback) {
 
     var testCanvas = document.createElement('canvas'),
-        testContext = testCanvas.getContext('2d');
+        isFlashCanvas = typeof FlashCanvas != 'undefined',
+        isExplorerCanvas = typeof G_vmlCanvasManager != 'undefnined';
 
     /* define test functions */
 
     function checkPointInPath() {
-        var transformed;
+        var transformed,
+            testContext = testCanvas.getContext('2d');
 
         testContext.save();
         try {
@@ -67,7 +82,7 @@ register('canvas', function(results, callback) {
     testCanvas.width = 200;
     testCanvas.height = 200;
 
-    results.pipTransformed = checkPointInPath();
+    results.pipTransformed = isFlashCanvas || isExplorerCanvas ? false : checkPointInPath();
 
     callback();
 });

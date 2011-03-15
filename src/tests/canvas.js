@@ -2,12 +2,14 @@ register('canvas', function(results, callback) {
 
     // initialise variables
     var testCanvas = document.createElement('canvas'),
-        testContext = testCanvas.getContext('2d');
+        isFlashCanvas = typeof FlashCanvas != 'undefined',
+        isExplorerCanvas = typeof G_vmlCanvasManager != 'undefnined';
     
     /* define test functions */
     
     function checkPointInPath() {
-        var transformed;
+        var transformed,
+            testContext = testCanvas.getContext('2d');
         
         testContext.save();
         try {
@@ -30,13 +32,13 @@ register('canvas', function(results, callback) {
     } // checkPointInPath
     
     /* initialise and run the tests */
-    
+
     // initialise the test canvas width and height
     testCanvas.width = 200;
     testCanvas.height = 200;
     
     // check the point in path tranforms
-    results.pipTransformed = checkPointInPath();
+    results.pipTransformed = isFlashCanvas || isExplorerCanvas ? false : checkPointInPath();
     
     // trigger the callback
     callback();
